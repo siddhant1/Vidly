@@ -1,88 +1,44 @@
+require("dotenv").config();
 const express = require("express");
 const app = express();
-require("dotenv").config();
-const Joi = require("joi");
+const startUpDebugger = require("debug")("app:startup");
+const dbDebugger = require("debug")("app:db");
+const morgan = require("morgan");
+const helmet = require("helmet");
+const config = require("config");
+const genre = require("./Routes/genres");
+const home = require("./Routes/home");
+app.set("view engine", "pug");
 app.use(express.json());
-const genres = [
-  { id: 1, name: "horror" },
-  { id: 2, name: "comedy" },
-  { id: 3, name: "romance" }
-];
-
-function validateGenres(genre) {
-  const Schema = {
-    name: Joi.string()
-      .min(3)
-      .required()
-  };
-  return Joi.validate(genre, Schema);
+app.use(express.urlencoded({ extended: true }));
+app.use(express.static("public"));
+app.use(helmet());
+app.use(helmet.noCache());
+// *************
+if (app.get("env") == "development") {
+  app.use(morgan("dev"));
+  startUpDebugger("Morgan");
 }
-// ******************************GET CODE BLOCKK*******************************
-app.get("/api/genres", (req, res) => {
-  //Return all the genres
-  res.status(202).send(genres);
-});
+// *************
 
-app.get("/api/genres/:id", (req, res) => {
-  //Lookup the genre with the given id
-  const genre = genres.find(g => g.id === parseInt(req.params.id));
-  if (!genre) {
-    res.status(404).send("The Genre with the given ID is not found");
-    return;
-  }
-  //Return the required Genre
-  res.status(202).send(genre);
-});
+// *******ROUTES******
+app.use("/api/genres", genre);
+app.use("/", home);
+// *******ROUTES END******
 
-// ******************************POST CODE BLOCK*********************
-app.post("/api/genres", (req, res) => {
-  //Validate the Request Body
-  const { error } = validateGenres(req.body);
-  if (error) {
-    res.status(400).send(error.details[0].message);
-    return;
-  }
+// *****************
+//db work
+dbDebugger("db work");
+// *****************
 
-  //Add the genre
-  const genre = {
-    id: genres.length + 1,
-    name: req.body.name
-  };
-  genres.push(genre);
-  res.status(200).send(genre);
-});
-// ******************************PUT CODE BLOCK*********************
-app.put("/api/genres/:id", (req, res) => {
-  //Lookup the genre
-  const genre = genres.find(g => g.id === parseInt(req.params.id));
-  if (!genre) {
-    res.status(404).send("The Genre With the given Id is not found");
-    return;
-  }
-  //Validate the put request body
-  const { error } = validateGenres(req.body);
-  if (error) {
-    res.status(404).send(error.details[0].message);
-    return;
-  }
-
-  //Update the Genre
-  genre.name = req.body.name;
-  res.send(genre);
-});
-// ******************************Delete CODE BLOCK*********************
-app.delete("/api/genres/:id", (req, res) => {
-  //Lookup the course
-  const genre = genres.find(g => g.id === parseInt(req.params.id));
-  if (!genre) {
-    res.status(404).send("The Genre with the given id is not found");
-    return;
-  }
-  //Delete the Genre
-  const index = genres.indexOf(genre);
-  genres.splice(index, 1);
-  res.send(genre);
-});
+// console.log("app name " + config.get("name"));
+// console.log("app name " + config.get("mail.host"));
+// console.log("app name " + config.get("mail.password"));
+// app.use((req, res, next) => {
+//   console.log("Logging");
+//   next();
+// });
+// app.use(require("./logger"));
 
 // **********************************BASIC SETUP***************************
 const Port = process.env.PORT || 4000;
