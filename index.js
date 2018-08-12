@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+require("dotenv").config();
 const Joi = require("joi");
 app.use(express.json());
 const genres = [
