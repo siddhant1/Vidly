@@ -1,27 +1,6 @@
 const router = require("express").Router();
-const mongoose = require("mongoose");
-const Joi = require("joi");
+const { validateGenres, Genre } = require("../models/genre");
 
-const Genre = mongoose.model(
-  "Genre",
-  new mongoose.Schema({
-    name: {
-      type: String,
-      required: true,
-      minlength: 5,
-      maxlength: 255
-    }
-  })
-);
-
-function validateGenres(genre) {
-  const Schema = {
-    name: Joi.string()
-      .min(3)
-      .required()
-  };
-  return Joi.validate(genre, Schema);
-}
 // ******************************GET CODE BLOCKK*******************************
 router.get("/", async (req, res) => {
   //Return all the genres
@@ -31,7 +10,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
   //Lookup the genre with the given id
-  const genre = await Genre.find({ _id: req.params.id });
+  const genre = await Genre.findById(req.params.id);
   if (!genre) {
     res.status(404).send("The genre with the given id is not found");
     return;
