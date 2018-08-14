@@ -1,6 +1,7 @@
 require("dotenv").config();
 const express = require("express");
 const app = express();
+const mongoose = require("mongoose");
 const startUpDebugger = require("debug")("app:startup");
 const dbDebugger = require("debug")("app:db");
 const morgan = require("morgan");
@@ -14,6 +15,11 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.static("public"));
 app.use(helmet());
 app.use(helmet.noCache());
+
+mongoose
+  .connect("mongodb://localhost:27017/vidly")
+  .then(() => console.log("connected to mongoDB"))
+  .catch(() => console.log("there is an error maybe"));
 // *************
 if (app.get("env") == "development") {
   app.use(morgan("dev"));
