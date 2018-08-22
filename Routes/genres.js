@@ -1,5 +1,7 @@
 const router = require("express").Router();
 const { validateGenres, Genre } = require("../models/genre");
+const auth = require("../middleware/auth");
+const admin = require("../middleware/admin");
 
 // ******************************GET CODE BLOCKK*******************************
 router.get("/", async (req, res) => {
@@ -19,7 +21,7 @@ router.get("/:id", async (req, res) => {
 });
 
 // ******************************POST CODE BLOCK*********************
-router.post("/", async (req, res) => {
+router.post("/", auth, async (req, res) => {
   //Validate the Request Body
   const { error } = validateGenres(req.body);
   if (error) {
@@ -55,7 +57,7 @@ router.put("/:id", async (req, res) => {
   res.send(genre);
 });
 // ******************************Delete CODE BLOCK*********************
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", [auth, admin], async (req, res) => {
   //Lookup the course and delte
   const genre = await Genre.findByIdAndRemove(req.params.id);
   if (!genre) {

@@ -14,6 +14,12 @@ const home = require("./Routes/home");
 const customer = require("./Routes/customer");
 const movie = require("./Routes/movie");
 const rental = require("./Routes/rentals");
+const user = require("./Routes/user");
+const auth = require("./Routes/auth");
+if (!process.env.jwtPrivateKey) {
+  console.log("jwtprivatekey is not defined");
+  process.exit(1);
+}
 app.set("view engine", "pug");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -38,6 +44,8 @@ app.use("/api/genre", genre);
 app.use("/api/customer", customer);
 app.use("/api/movie", movie);
 app.use("/api/rental", rental);
+app.use("/api/user", user);
+app.use("/api/auth", auth);
 // *******ROUTES END******
 
 // *****************
