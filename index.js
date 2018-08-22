@@ -1,4 +1,6 @@
 require("dotenv").config();
+const Joi = require("joi");
+Joi.objectId = require("joi-objectid")(Joi);
 const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
@@ -11,6 +13,7 @@ const genre = require("./Routes/genres");
 const home = require("./Routes/home");
 const customer = require("./Routes/customer");
 const movie = require("./Routes/movie");
+const rental = require("./Routes/rentals");
 app.set("view engine", "pug");
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -31,9 +34,10 @@ if (app.get("env") == "development") {
 
 // *******ROUTES******
 app.use("/", home);
-app.use("/api/genres", genre);
+app.use("/api/genre", genre);
 app.use("/api/customer", customer);
 app.use("/api/movie", movie);
+app.use("/api/rental", rental);
 // *******ROUTES END******
 
 // *****************

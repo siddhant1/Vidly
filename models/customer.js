@@ -13,7 +13,6 @@ function validateCustomer(customer) {
   };
   return Joi.validate(customer, schema);
 }
-
 const Customer = mongoose.model(
   "Customer",
   new mongoose.Schema({
